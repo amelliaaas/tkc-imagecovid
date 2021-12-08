@@ -27,8 +27,8 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     chosen_model = request.form['select_model']
-    model_dict = {'hyperModel'   :   'static/MLModule/model.h5',
-                    'manual'        : 'static/MLModule/model.h5',
+    model_dict = {'hyperModel'   :   'static/MLModule/model4.h5',
+                    'manual'        : 'static/MLModule/model4.h5',
                   'LRSModel'     :   'static/MLModule/LRSModel.h5',}
     if chosen_model in model_dict:
         model = load_model(model_dict[chosen_model]) 
@@ -47,7 +47,7 @@ def predict():
     return predict_result(chosen_model, runtimes, respon_model, 'temp.png')
 
 def predict_result(model, run_time, probs, img):
-    class_list = {'benign': 0, 'malignant': 1}
+    class_list = {'COVID': 0, 'Normal': 1}
     idx_pred = probs.index(max(probs))
     labels = list(class_list.keys())
     return render_template('/result_select.html', labels=labels, 
