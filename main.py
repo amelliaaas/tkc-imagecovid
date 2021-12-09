@@ -26,25 +26,34 @@ def index():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    chosen_model = request.form['select_model']
-    model_dict = {'hyperModel'   :   'static/MLModule/model3.h5',
-                    'manual'        : 'static/MLModule/model3.h5',
-                  'LRSModel'     :   'static/MLModule/LRSModel.h5',}
-    if chosen_model in model_dict:
-        model = load_model(model_dict[chosen_model]) 
-    else:
-        model = load_model(model_dict[0])
-    file = request.files["file"]
-    file.save(os.path.join('static', 'temp.png'))
-    img = cv2.cvtColor(np.array(Image.open(file)), cv2.COLOR_BGR2RGB)
-    img = np.expand_dims(cv2.resize(img, model.layers[0].input_shape[0][1:3] if not model.layers[0].input_shape[1:3] else model.layers[0].input_shape[1:3]).astype('float32') / 255, axis=0)
-    start = time.time()
-    pred = model.predict(img)[0]
-    labels = (pred > 0.5).astype(np.int)
-    print(labels)
-    runtimes = round(time.time()-start,4)
-    respon_model = [round(elem * 100, 2) for elem in pred]
-    return predict_result(chosen_model, runtimes, respon_model, 'temp.png')
+    try:
+        chosen_model = request.form['select_model']
+        model_dict = {'hyperModel'   :   'static/MLModule/model3.h5',
+                        'manual'        : 'static/MLModule/model3.h5',
+                      'LRSModel'     :   'static/MLModule/LRSModel.h5',}
+        if chosen_model in model_dict:
+            model = load_model(model_dict[chosen_model]) 
+        else:
+            model = load_model(model_dict[0])
+        file = request.files["file"]
+        file.save(os.path.join('static', 'temp.png'))
+        img = cv2.cvtColor(np.array(Image.open(file)), cv2.COLOR_BGR2RGB)
+        img = np.expand_dims(cv2.resize(img, model.layers[0].input_shape[0][1:3] if not model.layers[0].input_shape[1:3] else model.layers[0].input_shape[1:3]).astype('float32') / 255, axis=0)
+        start = time.time()
+        pred = model.predict(img)[0]
+        labels = (pred > 0.5).astype(np.int)
+        print(labels)
+        runtimes = round(time.time()-start,4)
+        respon_model = [round(elem * 100, 2) for elem in pred]
+        return predict_result(chosen_model, runtimes, respon_model, 'temp.png')
+    except OSError as err:
+        print("OS error: {0}".format(err))
+    except ValueError:
+        print("Could not convert data to an integer.")
+    except BaseException as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+        raise
+    
 
 def predict_result(model, run_time, probs, img):
     class_list = {'COVID': 0, 'Normal': 1}
