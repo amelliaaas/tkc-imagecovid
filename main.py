@@ -31,10 +31,13 @@ def predict():
         model_dict = {'hyperModel'   :   'static/MLModule/model3.h5',
                         'manual'        : 'static/MLModule/model3.h5',
                       'LRSModel'     :   'static/MLModule/LRSModel.h5',}
+
         if chosen_model in model_dict:
             model = load_model(model_dict[chosen_model]) 
         else:
             model = load_model(model_dict[0])
+        print(chosen_model)
+        raise
         file = request.files["file"]
         file.save(os.path.join('static', 'temp.png'))
         img = cv2.cvtColor(np.array(Image.open(file)), cv2.COLOR_BGR2RGB)
