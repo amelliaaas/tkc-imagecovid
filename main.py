@@ -56,12 +56,16 @@ def predict():
     
 
 def predict_result(model, run_time, probs, img):
-    class_list = {'COVID': 0, 'Normal': 1}
-    idx_pred = probs.index(max(probs))
-    labels = list(class_list.keys())
-    return render_template('/result_select.html', labels=labels, 
-                            probs=probs, model=model, pred=idx_pred, 
-                            run_time=run_time, img=img)
+    try:
+        class_list = {'COVID': 0, 'Normal': 1}
+        idx_pred = probs.index(max(probs))
+        labels = list(class_list.keys())
+        return render_template('/result_select.html', labels=labels, 
+                                probs=probs, model=model, pred=idx_pred, 
+                                run_time=run_time, img=img)
+    except BaseException as err:
+        print(f"Unexpected {err=}, {type(err)=}")
+        raise
 
 if __name__ == "__main__": 
         app.run(debug=True, host='0.0.0.0', port=2000)
