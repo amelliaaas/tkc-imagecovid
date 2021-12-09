@@ -36,8 +36,6 @@ def predict():
             model = load_model(model_dict[chosen_model]) 
         else:
             model = load_model(model_dict[0])
-        print(chosen_model)
-        raise
         file = request.files["file"]
         file.save(os.path.join('static', 'temp.png'))
         img = cv2.cvtColor(np.array(Image.open(file)), cv2.COLOR_BGR2RGB)
